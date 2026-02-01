@@ -1,0 +1,44 @@
+services:
+  # PostgreSQL Database (Free Tier)
+  - type: pserv
+    name: ai-news-db
+    plan: free
+    databaseName: ai_news_aggregator
+    user: ai_news_user
+    
+  # Background Worker (Free Tier)
+  - type: worker
+    name: ai-news-worker
+    runtime: docker
+    plan: free
+    branch: deployment-final
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: ENV
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ai-news-db
+          property: connectionString
+      - key: GEMINI_API_KEY
+        sync: false  # Set manually in Render dashboard
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USERNAME
+        sync: false  # Set manually in Render dashboard
+      - key: SMTP_PASSWORD
+        sync: false  # Set manually in Render dashboard
+      - key: EMAIL_FROM
+        sync: false  # Set manually in Render dashboard
+      - key: EMAIL_TO
+        sync: false  # Set manually in Render dashboard
+
+# Cron Jobs (Free Tier)
+# Note: Cron jobs must be configured manually in Render dashboard
+# Schedule: 0 8 * * * (Daily at 8 AM UTC)
+# Command: python scripts/run_pipeline.py 24 10
