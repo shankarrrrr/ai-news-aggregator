@@ -1,5 +1,5 @@
 from typing import List
-from .config import YOUTUBE_CHANNELS
+from .config import YOUTUBE_CHANNELS, ENABLE_OPENAI_SCRAPER, ENABLE_ANTHROPIC_SCRAPER
 from .scrapers.youtube import YouTubeScraper, ChannelVideo
 from .scrapers.openai import OpenAIScraper, OpenAIArticle
 from .scrapers.anthropic import AnthropicScraper, AnthropicArticle
@@ -8,8 +8,6 @@ from .database.repository import Repository
 
 def run_scrapers(hours: int = 24) -> dict:
     youtube_scraper = YouTubeScraper()
-    openai_scraper = OpenAIScraper()
-    anthropic_scraper = AnthropicScraper()
     repo = Repository()
     
     youtube_videos = []
@@ -30,39 +28,46 @@ def run_scrapers(hours: int = 24) -> dict:
             for v in videos
         ])
     
-    openai_articles = openai_scraper.get_articles(hours=hours)
-    anthropic_articles = anthropic_scraper.get_articles(hours=hours)
-    
     if video_dicts:
         repo.bulk_create_youtube_videos(video_dicts)
     
-    if openai_articles:
-        article_dicts = [
-            {
-                "guid": a.guid,
-                "title": a.title,
-                "url": a.url,
-                "published_at": a.published_at,
-                "description": a.description,
-                "category": a.category
-            }
-            for a in openai_articles
-        ]
-        repo.bulk_create_openai_articles(article_dicts)
+    # OpenAI scraper (optional)
+    openai_articles = []
+    if ENABLE_OPENAI_SCRAPER:
+        openai_scraper = OpenAIScraper()
+        openai_articles = openai_scraper.get_articles(hours=hours)
+        if openai_articles:
+            article_dicts = [
+                {
+                    "guid": a.guid,
+                    "title": a.title,
+                    "url": a.url,
+                    "published_at": a.published_at,
+                    "description": a.description,
+                    "category": a.category
+                }
+                for a in openai_articles
+            ]
+            repo.bulk_create_openai_articles(article_dicts)
     
-    if anthropic_articles:
-        article_dicts = [
-            {
-                "guid": a.guid,
-                "title": a.title,
-                "url": a.url,
-                "published_at": a.published_at,
-                "description": a.description,
-                "category": a.category
-            }
-            for a in anthropic_articles
-        ]
-        repo.bulk_create_anthropic_articles(article_dicts)
+    # Anthropic scraper (optional)
+    anthropic_articles = []
+    if ENABLE_ANTHROPIC_SCRAPER:
+        anthropic_scraper = AnthropicScraper()
+        anthropic_articles = anthropic_scraper.get_articles(hours=hours)
+        if anthropic_articles:
+            article_dicts = [
+                {
+                    "guid": a.guid,
+                    "title": a.title,
+                    "url": a.url,
+                    "published_at": a.published_at,
+                    "description": a.description,
+                    "category": a.category
+                }
+                for a in anthropic_articles
+            ]
+            repo.bulk_create_anthropic_articles(article_dicts)
     
     return {
         "youtube": youtube_videos,

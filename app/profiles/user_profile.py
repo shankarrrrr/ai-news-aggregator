@@ -1,26 +1,31 @@
 USER_PROFILE = {
-    "name": "Dave",
-    "title": "AI Engineer & Researcher",
-    "background": "Experienced AI engineer with deep interest in practical AI applications, research breakthroughs, and production-ready systems",
+    "name": "Shankar",
+    "title": "UPSC Aspirant",
+    "background": "UPSC Civil Services aspirant focused on current affairs, national and international news, government policies, and exam-relevant topics",
     "interests": [
-        "Large Language Models (LLMs) and their applications",
-        "Retrieval-Augmented Generation (RAG) systems",
-        "AI agent architectures and frameworks",
-        "Multimodal AI and vision-language models",
-        "AI safety and alignment research",
-        "Production AI systems and MLOps",
-        "Real-world AI applications and case studies",
-        "Technical tutorials and implementation guides",
-        "Research papers with practical implications",
-        "AI infrastructure and scaling challenges"
+        "National and international current affairs",
+        "Government policies and schemes",
+        "Economic developments and budget updates",
+        "Foreign relations and diplomacy",
+        "Social issues and welfare programs",
+        "Science and technology updates",
+        "Environmental and climate issues",
+        "Constitutional and legal developments",
+        "Defense and security matters",
+        "Historical and cultural topics",
+        "UPSC exam analysis and preparation tips",
+        "Editorial analysis and opinion pieces",
+        "Important committee reports and recommendations",
+        "Supreme Court judgments and their implications"
     ],
     "preferences": {
-        "prefer_practical": True,
-        "prefer_technical_depth": True,
-        "prefer_research_breakthroughs": True,
-        "prefer_production_focus": True,
-        "avoid_marketing_hype": True
+        "prefer_exam_relevant": True,
+        "prefer_analytical_content": True,
+        "prefer_factual_news": True,
+        "prefer_editorial_analysis": True,
+        "avoid_entertainment_news": True,
+        "avoid_sports_news": True
     },
-    "expertise_level": "Advanced"
+    "expertise_level": "Intermediate"
 }
 
