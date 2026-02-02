@@ -1,0 +1,49 @@
+name: Daily AI News Digest
+
+on:
+  schedule:
+    # Runs at 3:30 PM UTC (9:00 PM India time) every day
+    - cron: '30 15 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+      
+      - name: Run AI News Pipeline
+        env:
+          ENV: production
+          LOG_LEVEL: INFO
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SMTP_HOST: smtp.gmail.com
+          SMTP_PORT: 587
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: |
+          python scripts/run_pipeline.py 24 10
+      
+      - name: Upload logs (if failed)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-logs
+          path: |
+            *.log
+          retention-days: 7
