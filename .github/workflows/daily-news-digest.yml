@@ -37,6 +37,12 @@ jobs:
           EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
           EMAIL_TO: ${{ secrets.EMAIL_TO }}
         run: |
+          # Add IPv4 preference for Supabase connection
+          export PGHOST=$(echo "$DATABASE_URL" | sed -n 's/.*@\([^:]*\):.*/\1/p')
+          echo "Resolving $PGHOST to IPv4..."
+          export PGHOST_IP=$(getent ahostsv4 "$PGHOST" | head -n1 | awk '{print $1}')
+          echo "Using IP: $PGHOST_IP"
+          export DATABASE_URL=$(echo "$DATABASE_URL" | sed "s/@[^:]*:/@$PGHOST_IP:/")
           python scripts/run_pipeline.py 24 10
       
       - name: Upload logs (if failed)
