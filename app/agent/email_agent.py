@@ -2,7 +2,7 @@ import os
 import json
 from datetime import datetime
 from typing import List, Optional
-from google import genai
+import google.generativeai as genai
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 

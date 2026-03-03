@@ -56,12 +56,26 @@ docs/_build/
 # PyBuilder
 target/
 
-# DotEnv configuration
+# Environment configuration
 .env
+.env.local
+.env.production
 
 # Database
 *.db
 *.rdb
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+migration_*.log
+
+# Temporary files
+temp/
+tmp/
+*.tmp
 
 # Pycharm
 .idea

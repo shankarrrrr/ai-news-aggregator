@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:13-alpine
+    container_name: exam-intelligence-db
+    environment:
+      POSTGRES_DB: ai_news_aggregator
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - exam-intelligence-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Main Application
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: exam-intelligence-app
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/ai_news_aggregator
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=ai_news_aggregator
+      - ENV=development
+      - LOG_LEVEL=INFO
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+    ports:
+      - "8000:8000"
+    networks:
+      - exam-intelligence-network
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    command: >
+      sh -c "
+        echo 'Waiting for database...' &&
+        python scripts/run_migration.py &&
+        echo 'Database initialized successfully!' &&
+        python scripts/run_pipeline.py 24 10 --exam-type UPSC
+      "
+
+  # Redis (Optional - for caching)
+  redis:
+    image: redis:7-alpine
+    container_name: exam-intelligence-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - exam-intelligence-network
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  exam-intelligence-network:
+    driver: bridge

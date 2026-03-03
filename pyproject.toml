@@ -9,6 +9,7 @@ dependencies = [
     "docling>=2.61.2",
     "feedparser>=6.0.12",
     "google-genai>=1.0.0",
+    "hypothesis>=6.0.0",
     "markdown>=3.7.0",
     "markdownify>=0.11.6",
     "psycopg2-binary>=2.9.11",

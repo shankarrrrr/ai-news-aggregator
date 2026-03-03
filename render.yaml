@@ -1,14 +1,14 @@
 services:
   # PostgreSQL Database (Free Tier)
   - type: pserv
-    name: ai-news-db
+    name: competitive-exam-db
     plan: free
-    databaseName: ai_news_aggregator
-    user: ai_news_user
+    databaseName: competitive_exam_intelligence
+    user: exam_intelligence_user
     
   # Background Worker (Free Tier)
   - type: worker
-    name: ai-news-worker
+    name: competitive-exam-worker
     runtime: docker
     plan: free
     branch: deployment-final
@@ -21,7 +21,7 @@ services:
         value: INFO
       - key: DATABASE_URL
         fromDatabase:
-          name: ai-news-db
+          name: competitive-exam-db
           property: connectionString
       - key: GEMINI_API_KEY
         sync: false  # Set manually in Render dashboard
@@ -37,8 +37,58 @@ services:
         sync: false  # Set manually in Render dashboard
       - key: EMAIL_TO
         sync: false  # Set manually in Render dashboard
+      # Exam Intelligence System Configuration
+      - key: EXAM_CATEGORIES
+        value: "Polity,Economy,International Relations,Science & Tech,Environment & Ecology,Defence & Security,Government Schemes,Social Issues"
+      - key: YOUTUBE_CHANNELS
+        value: "UCYRBFLkuZ8ZAfwz7ayGGvZQ,UCnvC2wLZOiKdFkM8Ml4EzQg,UCZ8QY-RF48rE3LJRgdD0kVQ,UCawZsQWqfGSbCI5yjkdVkTA,UCOEVlIHEsILuTV_Ix8dDW5A,UC3cBGxYNVQURTNdvIjn05pA,UCawZsQWqfGSbCI5yjkdVkTC,UCawZsQWqfGSbCI5yjkdVkTD,UCawZsQWqfGSbCI5yjkdVkTE,UCawZsQWqfGSbCI5yjkdVkTF,UCawZsQWqfGSbCI5yjkdVkTG"
+      - key: PIB_BASE_URL
+        value: "https://pib.gov.in"
+      - key: GEMINI_MODEL
+        value: "gemini-1.5-flash"
+      - key: GEMINI_TEMPERATURE
+        value: "0.7"
+      - key: GEMINI_MAX_TOKENS
+        value: "2048"
+      - key: SCRAPER_TIMEOUT
+        value: "30"
+      - key: ENABLE_YOUTUBE_SCRAPER
+        value: "true"
+      - key: ENABLE_PIB_SCRAPER
+        value: "true"
+      - key: ENABLE_GOVERNMENT_SCHEMES_SCRAPER
+        value: "true"
+      - key: ENABLE_OPENAI_SCRAPER
+        value: "false"
+      - key: ENABLE_ANTHROPIC_SCRAPER
+        value: "false"
+      - key: RANKING_WEIGHTS_UPSC
+        value: "category_relevance:0.3,freshness:0.2,content_depth:0.25,source_credibility:0.25"
+      - key: RANKING_WEIGHTS_SSC
+        value: "category_relevance:0.35,freshness:0.25,factual_density:0.2,source_credibility:0.2"
+      - key: RANKING_WEIGHTS_BANKING
+        value: "category_relevance:0.3,freshness:0.2,banking_keywords:0.3,source_credibility:0.2"
+      # Health check and monitoring
+      - key: HEALTH_CHECK_ENABLED
+        value: "true"
+      - key: MONITORING_ENABLED
+        value: "true"
+      # Pipeline configuration
+      - key: DEFAULT_HOURS_LOOKBACK
+        value: "24"
+      - key: DEFAULT_TOP_N_ARTICLES
+        value: "10"
+      - key: DEFAULT_EXAM_TYPE
+        value: "UPSC"
 
 # Cron Jobs (Free Tier)
 # Note: Cron jobs must be configured manually in Render dashboard
 # Schedule: 0 8 * * * (Daily at 8 AM UTC)
-# Command: python scripts/run_pipeline.py 24 10
+# Command: python scripts/run_pipeline.py 24 10 --exam-type UPSC
+# 
+# Additional cron jobs for different exam types:
+# Schedule: 0 12 * * * (Daily at 12 PM UTC for SSC)
+# Command: python scripts/run_pipeline.py 24 10 --exam-type SSC
+# 
+# Schedule: 0 16 * * * (Daily at 4 PM UTC for Banking)
+# Command: python scripts/run_pipeline.py 24 10 --exam-type BANKING

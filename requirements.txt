@@ -1,0 +1,36 @@
+# AI-Powered Competitive Exam Intelligence System
+# Core Dependencies
+
+# Web scraping and parsing
+beautifulsoup4>=4.14.2
+feedparser>=6.0.12
+requests>=2.32.5
+youtube-transcript-api>=1.2.3
+
+# AI and ML
+google-genai>=1.0.0
+
+# Database
+psycopg2-binary>=2.9.11
+sqlalchemy>=2.0.44
+
+# Data validation and configuration
+pydantic>=2.0.0
+python-dotenv>=1.2.1
+
+# Document processing
+docling>=2.61.2
+markdown>=3.7.0
+markdownify>=0.11.6
+
+# Testing
+hypothesis>=6.0.0
+
+# Development dependencies (optional)
+# Uncomment for development setup
+# pytest>=7.0.0
+# pytest-cov>=4.0.0
+# black>=23.0.0
+# isort>=5.12.0
+# flake8>=6.0.0
+# mypy>=1.0.0

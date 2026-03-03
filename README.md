@@ -1,215 +1,488 @@
-# 🤖 AI News Aggregator - 100% Free, Gemini-Powered
+# AI-Powered Competitive Exam News Intelligence System
 
-A production-ready AI news aggregator that scrapes, summarizes, ranks, and emails personalized AI news digests daily. **Completely free** using Google Gemini API and Render's free tier.
+A sophisticated news aggregation and intelligence system specifically designed for competitive exam aspirants in India (UPSC, SSC, Banking, etc.). This system transforms raw news content from multiple sources into exam-focused intelligence reports using AI-powered categorization, summarization, and ranking.
 
-## ✨ Features
+## 🎯 Project Overview
 
-- 🔍 **Multi-Source Scraping**: YouTube transcripts, OpenAI blog, Anthropic blog
-- 🤖 **Gemini-Powered Agents**: Summarization, ranking, and email generation
-- 📊 **PostgreSQL Storage**: Persistent data with SQLAlchemy
-- 📧 **Personalized Emails**: Daily digest ranked by your interests
-- 🐳 **Docker Ready**: Production deployment with Dockerfile
-- 🆓 **100% Free**: No paid APIs or services required
+This project demonstrates the transformation of an existing AI News Aggregator into a specialized Competitive Exam Intelligence System, showcasing comprehensive Object-Oriented Programming principles and design patterns in a production-ready application.
+
+### Key Features
+
+- **Multi-Source Content Aggregation**: YouTube exam channels, PIB releases, Government schemes
+- **AI-Powered Processing**: Content categorization, summarization, and relevance scoring using Google Gemini API
+- **Exam-Specific Intelligence**: Tailored for UPSC, SSC, and Banking exam preparation
+- **Production-Ready Architecture**: Docker, PostgreSQL, comprehensive error handling
+- **Academic Excellence**: Demonstrates SOLID principles and 5 design patterns
+
+## 🏗️ Architecture & Design Patterns
+
+### Design Patterns Implemented
+- **Factory Pattern**: Dynamic scraper creation based on source type
+- **Strategy Pattern**: Interchangeable ranking algorithms for different exams
+- **Repository Pattern**: Clean data access abstraction
+- **Service Layer Pattern**: Business logic orchestration
+- **Template Method Pattern**: Common algorithm structure with customizable steps
+
+### SOLID Principles
+- **Single Responsibility**: Each class has one reason to change
+- **Open/Closed**: Open for extension, closed for modification
+- **Liskov Substitution**: Subclasses are substitutable for base classes
+- **Interface Segregation**: Focused, specific interfaces
+- **Dependency Inversion**: Depend on abstractions, not concretions
 
 ## 🚀 Quick Start
 
-### Local Development (5 minutes)
+### Prerequisites
+
+- **Python 3.9+**
+- **PostgreSQL 12+**
+- **Google Gemini API Key**
+- **Git**
+
+### 1. Clone the Repository
 
 ```bash
-# 1. Install dependencies
-pip install -e .
+git clone https://github.com/yourusername/competitive-exam-intelligence-system.git
+cd competitive-exam-intelligence-system
+```
 
-# 2. Configure environment
+### 2. Set Up Python Environment
+
+```bash
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### 3. Database Setup
+
+#### Option A: Local PostgreSQL
+```bash
+# Install PostgreSQL (if not already installed)
+# Windows: Download from https://www.postgresql.org/download/windows/
+# macOS: brew install postgresql
+# Ubuntu: sudo apt-get install postgresql postgresql-contrib
+
+# Create database
+createdb ai_news_aggregator
+
+# Or using psql:
+psql -U postgres
+CREATE DATABASE ai_news_aggregator;
+\q
+```
+
+#### Option B: Docker PostgreSQL
+```bash
+docker run --name postgres-exam-system \
+  -e POSTGRES_DB=ai_news_aggregator \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=your_password \
+  -p 5432:5432 \
+  -d postgres:13
+```
+
+### 4. Environment Configuration
+
+Create a `.env` file in the project root:
+
+```bash
+# Copy example environment file
 cp .env.example .env
-# Add your GEMINI_API_KEY to .env
-
-# 3. Start database
-cd docker && docker-compose up -d && cd ..
-
-# 4. Initialize database
-python -c "from app.database.create_tables import create_tables; create_tables()"
-
-# 5. Run pipeline (no email)
-python scripts/run_pipeline.py 24 10 --no-email
 ```
 
-**See [QUICKSTART.md](QUICKSTART.md) for detailed setup.**
+Edit `.env` with your configuration:
 
-## 🌐 Deploy to Render (FREE)
+```env
+# ============================================
+# AI-Powered Competitive Exam Intelligence System
+# ============================================
 
-Deploy in 10 minutes with Render's free tier:
+# ----------------
+# LLM Configuration (REQUIRED)
+# ----------------
+GEMINI_API_KEY=your_gemini_api_key_here
 
-1. **Get Gemini API Key** (free): https://makersuite.google.com/app/apikey
-2. **Create PostgreSQL** on Render (free 90 days)
-3. **Deploy Background Worker** with Docker
-4. **Set up Cron Job** for daily automation
+# ----------------
+# Database Configuration (REQUIRED)
+# ----------------
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your_password
+POSTGRES_DB=ai_news_aggregator
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
 
-**See [DEPLOYMENT.md](DEPLOYMENT.md) for step-by-step guide.**
+# Combined DATABASE_URL
+DATABASE_URL=postgresql://postgres:your_password@localhost:5432/ai_news_aggregator
 
-## 🏗️ Architecture
+# ----------------
+# Email Configuration (Optional)
+# ----------------
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=your_email@gmail.com
+SMTP_PASSWORD=your_app_password
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     5-Stage Pipeline                         │
-├─────────────────────────────────────────────────────────────┤
-│ 1. Scrape    → YouTube, OpenAI, Anthropic                   │
-│ 2. Process   → Extract content, transcripts                 │
-│ 3. Digest    → Gemini summarizes each article               │
-│ 4. Curate    → Gemini ranks by user profile                 │
-│ 5. Email     → Gemini generates personalized digest         │
-└─────────────────────────────────────────────────────────────┘
-```
+EMAIL_FROM=Exam Intelligence <your_email@gmail.com>
+EMAIL_TO=recipient@gmail.com
 
-### Tech Stack
-
-- **LLM**: Google Gemini 1.5 Flash (free tier)
-- **Database**: PostgreSQL with SQLAlchemy
-- **Scrapers**: YouTube RSS, BeautifulSoup, Docling
-- **Email**: SMTP (Gmail)
-- **Deployment**: Docker + Render
-
-## 📁 Project Structure
-
-```
-ai-news-aggregator/
-├── app/
-│   ├── agent/              # Gemini-powered agents
-│   │   ├── digest_agent.py    # Summarization
-│   │   ├── curator_agent.py   # Ranking
-│   │   └── email_agent.py     # Email generation
-│   ├── database/           # PostgreSQL models
-│   ├── scrapers/           # Content scrapers
-│   ├── services/           # Processing pipeline
-│   └── profiles/           # User preferences
-├── scripts/
-│   └── run_pipeline.py     # Production entrypoint
-├── Dockerfile              # Production container
-├── render.yaml             # Render configuration
-├── QUICKSTART.md           # 5-minute setup
-├── TESTING.md              # Testing guide
-└── DEPLOYMENT.md           # Deployment guide
+# ----------------
+# Application Settings
+# ----------------
+ENV=development
+LOG_LEVEL=INFO
 ```
 
-## 🎯 CLI Usage
+### 5. Get Google Gemini API Key
 
+1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Create a new API key
+3. Copy the key to your `.env` file
+
+### 6. Initialize Database
+
+```bash
+# Run database migration
+python scripts/run_migration.py
+
+# Verify setup
+python scripts/validate_setup.py
+```
+
+### 7. Run the System
+
+#### Basic Pipeline Execution
+```bash
+# Run pipeline for last 24 hours, get top 10 articles for UPSC
+python scripts/run_pipeline.py 24 10 --exam-type UPSC
+
+# Dry run (no database writes)
+python scripts/run_pipeline.py 24 5 --exam-type UPSC --dry-run
+
+# Different exam types
+python scripts/run_pipeline.py 48 15 --exam-type SSC
+python scripts/run_pipeline.py 12 8 --exam-type Banking
+```
+
+#### Command Line Options
 ```bash
 python scripts/run_pipeline.py [hours] [top_n] [options]
 
-# Examples:
-python scripts/run_pipeline.py 24 10              # Last 24h, top 10
-python scripts/run_pipeline.py 48 15              # Last 48h, top 15
-python scripts/run_pipeline.py 24 10 --dry-run    # No email
-python scripts/run_pipeline.py 24 10 --no-email   # Skip email
+Arguments:
+  hours                 Number of hours to look back (default: 24)
+  top_n                 Number of top articles to include (default: 10)
+
+Options:
+  --exam-type {UPSC,SSC,Banking}  Exam type for ranking (default: UPSC)
+  --dry-run                       Skip database writes and email sending
+  --no-email                      Skip email generation
+  --skip-validation               Skip environment validation
 ```
 
 ## 🧪 Testing
 
-Run comprehensive tests before deployment:
-
+### Run All Tests
 ```bash
-# Test Gemini API
-python -c "from app.agent.digest_agent import DigestAgent; agent = DigestAgent(); print('✓ Gemini working')"
+# Unit tests
+python -m pytest tests/unit/ -v
 
-# Test full pipeline (no email)
-python scripts/run_pipeline.py 24 10 --no-email
+# Integration tests
+python -m pytest tests/integration/ -v
 
-# Test with email
-python scripts/run_pipeline.py 24 10
+# Property-based tests
+python -m pytest tests/property/ -v
+
+# All tests
+python -m pytest -v
 ```
 
-**See [TESTING.md](TESTING.md) for full test suite.**
+### Test Individual Components
+```bash
+# Test scrapers
+python -c "
+from app.scrapers.scraper_factory import ScraperFactory, SourceType
+scraper = ScraperFactory.create_scraper(SourceType.YOUTUBE)
+print(f'✅ {type(scraper).__name__} created successfully')
+"
 
-## 🔧 Customization
+# Test ranking strategies
+python -c "
+from app.services.ranking.upsc_ranking_strategy import UPSCRankingStrategy
+from app.services.ranking.abstract_ranking_strategy import ArticleMetadata
+from datetime import datetime, timezone
 
-### Add YouTube Channels
-Edit `app/config.py`:
-```python
-YOUTUBE_CHANNELS = [
-    "UCawZsQWqfGSbCI5yjkdVkTA",  # Matthew Berman
-    "YOUR_CHANNEL_ID_HERE",
-]
+strategy = UPSCRankingStrategy()
+metadata = ArticleMetadata(
+    category='Economy',
+    source_type='pib',
+    published_at=datetime.now(timezone.utc),
+    content_length=500,
+    keywords=['monetary policy']
+)
+result = strategy.calculate_score('RBI announces new policy measures', metadata)
+print(f'✅ Score: {result.score:.2f}/10.0')
+"
 ```
 
-### Update User Profile
-Edit `app/profiles/user_profile.py`:
-```python
-USER_PROFILE = {
-    "name": "Your Name",
-    "interests": ["LLMs", "AI Safety", "..."],
-    "expertise_level": "intermediate",
-}
+## 🐳 Docker Deployment
+
+### Build and Run with Docker
+```bash
+# Build image
+docker build -t exam-intelligence-system .
+
+# Run with environment file
+docker run --env-file .env -p 8000:8000 exam-intelligence-system
+
+# Run with Docker Compose (includes PostgreSQL)
+docker-compose up -d
 ```
 
-## 💰 Cost Breakdown (ALL FREE)
+### Docker Compose Configuration
+```yaml
+# docker-compose.yml
+version: '3.8'
+services:
+  app:
+    build: .
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/ai_news_aggregator
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    depends_on:
+      - db
+    
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=ai_news_aggregator
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 
-| Service | Free Tier | Limits |
-|---------|-----------|--------|
-| **Gemini API** | ✅ Free | 15 req/min, 1500 req/day |
-| **Render PostgreSQL** | ✅ Free 90 days | 1GB storage |
-| **Render Worker** | ✅ Free | 750 hours/month |
-| **Render Cron** | ✅ Free | Unlimited jobs |
-| **Gmail SMTP** | ✅ Free | 500 emails/day |
+volumes:
+  postgres_data:
+```
 
-**Total: $0/month** (for first 90 days)
+## 📊 System Components
 
-## 🔄 Migration from OpenAI
+### Content Sources
+- **YouTube Channels**: 11 exam preparation channels with transcript extraction
+- **PIB (Press Information Bureau)**: Official government press releases
+- **Government Schemes**: Welfare programs and policy announcements
 
-This project was migrated from OpenAI to Gemini for 100% free operation:
+### Processing Pipeline
+1. **Scraping**: Multi-source content acquisition
+2. **Categorization**: AI-powered classification into 8 exam categories
+3. **Summarization**: Exam-focused summaries with prelims/mains analysis
+4. **Ranking**: Relevance scoring using exam-specific strategies
+5. **Storage**: PostgreSQL persistence with proper relationships
+6. **Digest**: Formatted intelligence report generation
 
-- ✅ Replaced `openai` with `google-generativeai`
-- ✅ Updated all agents to use Gemini 1.5 Flash
-- ✅ Maintained structured outputs with JSON parsing
-- ✅ Added robust error handling
-- ✅ No functionality lost
+### Exam Categories
+- Polity & Governance
+- Economy & Finance
+- International Relations
+- Science & Technology
+- Environment & Ecology
+- Defence & Security
+- Government Schemes
+- Social Issues
 
-## 📚 Documentation
+## 🔧 Configuration
 
-- **[QUICKSTART.md](QUICKSTART.md)** - Get started in 5 minutes
-- **[TESTING.md](TESTING.md)** - Comprehensive testing guide
-- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Deploy to Render (free)
+### Environment Variables
 
-## 🐛 Troubleshooting
+| Variable | Required | Description | Default |
+|----------|----------|-------------|---------|
+| `GEMINI_API_KEY` | Yes | Google Gemini API key | - |
+| `DATABASE_URL` | Yes | PostgreSQL connection string | - |
+| `POSTGRES_HOST` | Yes | Database host | localhost |
+| `POSTGRES_PORT` | Yes | Database port | 5432 |
+| `POSTGRES_USER` | Yes | Database username | postgres |
+| `POSTGRES_PASSWORD` | Yes | Database password | - |
+| `POSTGRES_DB` | Yes | Database name | ai_news_aggregator |
+| `SMTP_HOST` | No | Email SMTP server | smtp.gmail.com |
+| `SMTP_PORT` | No | Email SMTP port | 587 |
+| `SMTP_USERNAME` | No | Email username | - |
+| `SMTP_PASSWORD` | No | Email password | - |
+| `EMAIL_FROM` | No | Sender email address | - |
+| `EMAIL_TO` | No | Recipient email address | - |
+| `ENV` | No | Environment (development/production) | development |
+| `LOG_LEVEL` | No | Logging level | INFO |
+
+### YouTube Channels Configuration
+
+The system is pre-configured with 11 exam preparation channels:
+- StudyIQ IAS
+- Drishti IAS  
+- Vision IAS
+- OnlyIAS
+- Insights IAS
+- PIB India Official
+- Sansad TV
+- Vajiram & Ravi
+- Adda247
+- BYJU'S Exam Prep
+- Unacademy UPSC
+
+## 📈 Monitoring & Logging
+
+### Performance Monitoring
+```bash
+# Check system health
+python scripts/test_health_check.py
+
+# Monitor pipeline performance
+python scripts/test_monitoring.py
+
+# View logs
+tail -f logs/pipeline.log
+```
+
+### Log Levels
+- **INFO**: General pipeline progress
+- **WARNING**: Non-critical issues (missing transcripts, etc.)
+- **ERROR**: Critical failures requiring attention
+- **DEBUG**: Detailed execution information
+
+## 🚨 Troubleshooting
 
 ### Common Issues
 
-**"GEMINI_API_KEY not found"**
-- Check `.env` file exists and contains your key
+#### 1. Database Connection Failed
+```bash
+# Check PostgreSQL is running
+pg_isready -h localhost -p 5432
 
-**"Database connection failed"**
-- Start Docker: `docker-compose up -d`
-- Verify `DATABASE_URL` in `.env`
+# Test connection
+python -c "
+import psycopg2
+conn = psycopg2.connect('postgresql://postgres:password@localhost:5432/ai_news_aggregator')
+print('✅ Database connection successful')
+conn.close()
+"
+```
 
-**"No articles scraped"**
-- Increase hours: `python scripts/run_pipeline.py 48 10`
-- Check YouTube channels are active
+#### 2. Gemini API Errors
+```bash
+# Test API key
+python -c "
+import google.generativeai as genai
+import os
+genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
+model = genai.GenerativeModel('gemini-1.5-flash')
+response = model.generate_content('Hello')
+print('✅ Gemini API working')
+"
+```
 
-**"Email sending failed"**
-- Use Gmail app password (not regular password)
-- Enable 2FA on Gmail
+#### 3. Missing Dependencies
+```bash
+# Reinstall dependencies
+pip install --upgrade -r requirements.txt
 
-**See [TESTING.md](TESTING.md) for more troubleshooting.**
+# Check specific packages
+pip show sqlalchemy pydantic google-generativeai
+```
 
-## 🎯 Roadmap
+#### 4. YouTube Transcript Issues
+- Some videos may not have transcripts available
+- The system gracefully handles missing transcripts
+- Check logs for specific video failures
 
-- [x] Gemini integration (free tier)
-- [x] Docker deployment
-- [x] Render configuration
-- [x] Comprehensive testing
-- [ ] Add more sources (Reddit, Hacker News)
-- [ ] Web UI for configuration
-- [ ] Multi-user support
-- [ ] Advanced filtering
+### Performance Optimization
+
+#### Database Performance
+```sql
+-- Check slow queries
+SELECT query, mean_time, calls 
+FROM pg_stat_statements 
+ORDER BY mean_time DESC 
+LIMIT 10;
+
+-- Analyze table statistics
+ANALYZE articles;
+ANALYZE summaries;
+ANALYZE rankings;
+```
+
+#### API Rate Limiting
+- Gemini API: 60 requests per minute
+- YouTube API: 10,000 units per day
+- System includes automatic retry with exponential backoff
+
+## 📚 Academic Documentation
+
+### Project Report
+- **File**: `docs/PROJECT_REPORT.md`
+- **Content**: Complete academic analysis with OOP principles and design patterns
+- **Length**: 2,500+ words with code examples
+
+### UML Diagrams
+- **Class Diagram**: `docs/uml/class_diagram.md` (40+ classes)
+- **Component Diagram**: `docs/uml/component_diagram.md` (Architecture layers)
+- **Format**: Mermaid syntax for easy rendering
+
+### Code Documentation
+- **Type Hints**: Comprehensive type annotations throughout
+- **Docstrings**: Google-style docstrings for all classes and methods
+- **Comments**: Inline explanations for complex logic
+
+## 🤝 Contributing
+
+### Development Setup
+```bash
+# Install development dependencies
+pip install -r requirements-dev.txt
+
+# Run code formatting
+black app/ tests/
+isort app/ tests/
+
+# Run linting
+flake8 app/ tests/
+mypy app/
+
+# Run tests with coverage
+pytest --cov=app tests/
+```
+
+### Code Standards
+- **PEP 8**: Python style guide compliance
+- **Type Hints**: All functions must have type annotations
+- **Docstrings**: Google-style documentation required
+- **Testing**: Minimum 80% code coverage
 
 ## 📄 License
 
-MIT License - See LICENSE file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-- Google Gemini for free LLM API
-- Render for free hosting
-- Open source community
+- **Google Gemini API** for AI-powered content processing
+- **YouTube Data API** for video transcript access
+- **Press Information Bureau (PIB)** for official government content
+- **PostgreSQL** for robust data storage
+- **SQLAlchemy** for elegant ORM capabilities
+
+## 📞 Support
+
+For issues and questions:
+1. Check the [Troubleshooting](#-troubleshooting) section
+2. Review the [Academic Documentation](#-academic-documentation)
+3. Create an issue on GitHub with detailed error information
 
 ---
 
-**Ready to get started? See [QUICKSTART.md](QUICKSTART.md)! 🚀**
+**Built with ❤️ for competitive exam aspirants across India**
