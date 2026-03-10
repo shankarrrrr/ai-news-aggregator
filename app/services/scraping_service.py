@@ -102,29 +102,33 @@ class ScrapingService:
         logger.info(f"Starting scraping for last {hours} hours")
         
         # Get active sources from database and extract data while in session
+        active_sources_data = []
+        
         if source_types:
-            active_sources_data = []
             for source_type in source_types:
                 sources = self._source_repo.find_active_by_type(source_type)
                 for source in sources:
+                    # Extract all data while source is still in session
+                    source_type_value = source.source_type.value if hasattr(source.source_type, 'value') else str(source.source_type)
                     active_sources_data.append({
                         'id': source.id,
                         'name': source.name,
-                        'source_type': source.source_type.value if hasattr(source.source_type, 'value') else str(source.source_type),
+                        'source_type': source_type_value,
                         'url': source.url
                     })
         else:
             sources = self._source_repo.find_active_sources()
-            active_sources_data = []
             for source in sources:
+                # Extract all data while source is still in session
+                source_type_value = source.source_type.value if hasattr(source.source_type, 'value') else str(source.source_type)
                 active_sources_data.append({
                     'id': source.id,
                     'name': source.name,
-                    'source_type': source.source_type.value if hasattr(source.source_type, 'value') else str(source.source_type),
+                    'source_type': source_type_value,
                     'url': source.url
                 })
         
-        logger.info(f"Found {len(active_sources_data)} active sources")
+        logger.info(f"Found {len(active_sources_data)} active sources to scrape")
         
         # Statistics tracking
         total_scraped = 0
